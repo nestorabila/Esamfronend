@@ -204,6 +204,7 @@ const notasSistemaUnicos = [
   )
 ];
 
+const [busquedaPrograma, setBusquedaPrograma] = useState("");
 const aplicarFiltros = (
   programa: string,
   responsable: string,
@@ -647,38 +648,107 @@ const [codigosProyecto, setCodigosProyecto] =
             Filtrar por programa
           </label>
 
-          <select
-  value={programaSeleccionado}
-  onChange={(e) =>
-    aplicarFiltros(
-  e.target.value,
-  responsableSeleccionado,
-  notasSistemaSeleccionadas
-)
-  }
-  className="
-    w-[700px]
-    px-3 py-2
-    text-xs
-    rounded-lg
-    border border-gray-300 dark:border-gray-700
-    bg-white dark:bg-gray-900
-    text-gray-700 dark:text-gray-200
-    focus:outline-none
-    focus:ring-2 focus:ring-blue-500/40
-  "
->
+         {/* AUTOCOMPLETE PROGRAMAS */}
+<div className="relative w-[700px]">
 
-            <option value="">Todos los programas</option>
+  {/* INPUT PRINCIPAL */}
+  <input
+    type="text"
+    value={busquedaPrograma}
+    onChange={(e) => {
+      const value = e.target.value;
 
-            {programasUnicos.map((programa, index) => (
-              <option key={index} value={programa}>
-                {programa}
-              </option>
-            ))}
+      setBusquedaPrograma(value);
 
-          </select>
+      // si se borra el input → reset real
+      if (value === "") {
+        setProgramaSeleccionado("");
+        aplicarFiltros("", responsableSeleccionado, notasSistemaSeleccionadas);
+      }
+    }}
+    placeholder="Buscar programa..."
+    className="
+      w-full
+      px-3 py-2
+      text-xs
+      rounded-lg
+      border border-gray-300 dark:border-gray-700
+      bg-white dark:bg-gray-900
+      text-gray-700 dark:text-gray-200
+      focus:outline-none
+      focus:ring-2 focus:ring-blue-500/40
+    "
+  />
 
+  {/* DROPDOWN */}
+  {busquedaPrograma && (
+    <div className="
+      absolute
+      z-50
+      w-full
+      mt-1
+      max-h-60
+      overflow-y-auto
+      rounded-lg
+      border border-gray-300 dark:border-gray-700
+      bg-white dark:bg-gray-900
+      shadow-lg
+    ">
+
+      {/* OPCIÓN: FILTRAR TODOS */}
+      <div
+        className="
+          px-3 py-2
+          text-xs
+          cursor-pointer
+          text-gray-500
+          hover:bg-gray-100 dark:hover:bg-gray-800
+        "
+        onClick={() => {
+          setProgramaSeleccionado("");
+          setBusquedaPrograma("");
+          aplicarFiltros("", responsableSeleccionado, notasSistemaSeleccionadas);
+        }}
+      >
+        🔎 Filtrar todos los programas
+      </div>
+
+      {/* LISTA FILTRADA */}
+      {programasUnicos
+        .filter((programa) =>
+          normalizarTexto(programa).includes(
+            normalizarTexto(busquedaPrograma)
+          )
+        )
+        .map((programa, index) => (
+          <div
+            key={index}
+            className="
+              px-3 py-2
+              text-xs
+              cursor-pointer
+              text-gray-700 dark:text-gray-200
+              hover:bg-blue-100 dark:hover:bg-blue-900
+            "
+            onClick={() => {
+              setProgramaSeleccionado(programa);
+              setBusquedaPrograma(programa);
+
+              aplicarFiltros(
+                programa,
+                responsableSeleccionado,
+                notasSistemaSeleccionadas
+              );
+            }}
+          >
+            {programa}
+          </div>
+        ))}
+
+    </div>
+  )}
+
+</div>
         </div>
 
 
