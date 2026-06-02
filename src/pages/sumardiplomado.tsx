@@ -40,27 +40,27 @@ const configuraciones = {
 
 const [tipo, setTipo] = useState(6);
 
-const datos = configuraciones[tipo];
-
+const datos = (configuraciones as any)[tipo];
 const [filas, setFilas] = useState(
-  configuraciones[6].map(() => ({
+  (configuraciones as any)[6].map(() => ({
     valor1: "",
     valor2: "",
   }))
 );
 
-const cambiarTipo = (nuevoTipo) => {
+const cambiarTipo = (nuevoTipo: any) => {
   setTipo(nuevoTipo);
 
   setFilas(
-    configuraciones[nuevoTipo].map(() => ({
-      valor1: "",
-      valor2: "",
+    (configuraciones as any)[nuevoTipo].map(() => ({
+  valor1: "",
+  valor2: "",
+
     }))
   );
 };
 
-const pegarDatos = (e) => {
+const pegarDatos = (e:any) => {
   e.preventDefault();
 
   const texto = e.clipboardData.getData("text");
@@ -89,31 +89,31 @@ const pegarDatos = (e) => {
   setFilas(nuevasFilas);
 };
 
-const actualizar = (i, campo, valor) => {
+const actualizar = (i: any, campo: any, valor:any) => {
   const copia = [...filas];
 
-  copia[i][campo] = valor;
+  (copia[i] as any)[campo] = valor;
 
   setFilas(copia);
 };
 
 const totalTHP = datos.reduce(
-  (a, b) => a + b.thp,
+  (a:any, b:any) => a + b.thp,
   0
 );
 
 const totalTHNP = datos.reduce(
-  (a, b) => a + b.thnp,
+  (a:any, b:any) => a + b.thnp,
   0
 );
 
 const totalValor1 = filas.reduce(
-  (a, b) => a + (Number(b.valor1) || 0),
+  (a:any, b:any) => a + (Number(b.valor1) || 0),
   0
 );
 
 const totalValor2 = filas.reduce(
-  (a, b) => a + (Number(b.valor2) || 0),
+  (a:any, b:any) => a + (Number(b.valor2) || 0),
   0
 );
 
@@ -260,7 +260,7 @@ return (
         </thead>
 
         <tbody>
-          {datos.map((fila, i) => (
+          {datos.map((fila: any, i: any) => (
             <tr
               key={i}
               className="
