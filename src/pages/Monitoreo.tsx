@@ -14,12 +14,176 @@ import {
   obtenerProgramasNuevos
 } from "../services/monitoreoService";
 
+import {
+  obtenerProgramas,
+  extraerMalla,
+  listarMallas,
+  limpiarMallas
+} from "../services/programaService";
+
+
+
+
+
+
 function MonitoreoPage() {
+
+// funciones para mallas
+const [codigoMalla, setCodigoMalla] =
+  useState("");
+
+const [mallas, setMallas] =
+  useState<any[]>([]);
+
+const [loadingMalla, setLoadingMalla] =
+  useState(false);
+
+const [programasMalla, setProgramasMalla] =
+  useState<any[]>([]);
+
+
+const cargarProgramasMalla =
+async () => {
+
+  try {
+
+    const data =
+      await obtenerProgramas();
+
+    setProgramasMalla(data);
+
+  } catch (error) {
+
+    console.log(error);
+
+  }
+
+};
+
+const buscarMallaPorCodigo =
+async (codigo: string) => {
+
+  try {
+
+    if (!codigo.trim()) return;
+
+    setLoadingMalla(true);
+
+    const programa =
+      programasMalla.find(
+        (item) =>
+          item.codAcadem
+            .trim()
+            .toLowerCase() ===
+          codigo
+            .trim()
+            .toLowerCase()
+      );
+
+    if (!programa) {
+
+      alert(
+        "No se encontró el código"
+      );
+
+      return;
+    }
+
+    await extraerMalla(
+      programa.linkMalla
+    );
+
+    const resultado =
+      await listarMallas();
+      console.log(resultado);
+
+
+    setMallas(resultado.data[0]);
+
+  } catch (error) {
+
+    console.log(error);
+
+    alert(
+      "Error al extraer malla"
+    );
+
+  } finally {
+
+    setLoadingMalla(false);
+
+  }
+
+};
+
+
+
+  // LIMPIAR MEMORIA
+ const manejarLimpiarMemoriaMalla =
+async () => {
+
+  try {
+
+    await limpiarMallas();
+
+    setMallas([]);
+    setCodigoMalla("");
+
+    setReporte(null);
+
+    setTipoMensaje("success");
+
+    setMensaje(
+      "Datos de mallas eliminados correctamente."
+    );
+
+    setTimeout(() => {
+
+      setMensaje("");
+      setTipoMensaje("");
+
+    }, 3000);
+
+  } catch (error) {
+
+    console.log(error);
+
+    setTipoMensaje("error");
+
+    setMensaje(
+      "No se pudieron limpiar las mallas."
+    );
+
+    setTimeout(() => {
+
+      setMensaje("");
+      setTipoMensaje("");
+
+    }, 5000);
+
+  }
+
+};
+  // aqui terminar funciones de mallas
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   const [programas, setProgramas] = useState<Monitoreo[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [openModal, setOpenModal] = useState(false);
+    const [openModal1, setOpenModal1] = useState(false);
 
   const [programaSeleccionado, setProgramaSeleccionado] = useState("");
   const [programasFiltrados, setProgramasFiltrados] = useState<Monitoreo[]>([]);
@@ -41,6 +205,7 @@ function MonitoreoPage() {
   const [analizando, setAnalizando] = useState(false);
 
   const [openReporte, setOpenReporte] = useState(false);
+   const [openReporte1, setOpenReporte1] = useState(false);
 
 
   // metodo para checbok excel
@@ -837,6 +1002,25 @@ const [codigosProyecto, setCodigosProyecto] =
           Ver datos extraídos
         </button>
 
+             {/* ver modal para malla*/}
+        <button
+  onClick={() => {
+    setOpenModal1(true);
+    cargarProgramasMalla();
+  }}
+  className="
+    px-4 py-2
+    text-xs font-medium
+    rounded-lg
+    bg-yellow-600 hover:bg-yellow-700
+    text-white
+    transition
+    cursor-pointer
+  "
+>
+  Analizar con Malla
+</button>
+
       </div>
 
     </div>
@@ -918,17 +1102,12 @@ const [codigosProyecto, setCodigosProyecto] =
 </td>
 
                 {/* CODIGO */}
-                <td  onClick={() =>
-              item.linkProyecto &&
-              window.open(item.linkProyecto, "_blank")
-            }
+                <td  
                 className="
                   px-3 py-2
                   font-medium
                   text-gray-700 dark:text-gray-200
-                  cursor-pointer
-              hover:underline
-              hover:text-blue-600
+               
                 ">
                   {item.codAcadem}
                 </td>
@@ -944,20 +1123,29 @@ const [codigosProyecto, setCodigosProyecto] =
 
                 {/* TIPO */}
                 <td className="px-3 py-2">
-                  <span className="
+                  <span
+                  onClick={() =>
+              item.linkProyecto &&
+              window.open(item.linkProyecto, "_blank")
+            }
+                   className="
                     px-2 py-1
                     rounded-md
                     text-[10px]
                     font-semibold
                     bg-blue-100 text-blue-700
                     dark:bg-blue-900/40 dark:text-blue-300
+                       cursor-pointer
+              hover:underline
+              hover:text-blue-600
                   ">
                     {item.tipo}
                   </span>
                 </td>
 
                 {/* VERSION */}
-                <td className="px-3 py-2 text-gray-700 dark:text-gray-300">
+                <td 
+                className="px-3 py-2 text-gray-700 dark:text-gray-300">
                   {item.version}
                 </td>
 
@@ -1629,12 +1817,6 @@ const [codigosProyecto, setCodigosProyecto] =
 
 )}
 
-{/* aqui termina modal datos extraidos */}
-
-{/* modal datos analizados  */}
-
-{/* modal ver reportes del analisis */}
-
 {/* MODAL REPORTES */}
 {
   openReporte && reporte && (
@@ -1859,6 +2041,620 @@ const [codigosProyecto, setCodigosProyecto] =
 }
 
 {/* finaliza el mensaje aqui------ */}
+
+
+
+
+
+
+
+
+
+
+
+
+
+{/* =========================
+    MODAL DATOS EXTRAÍDOS ENTRE NOTAS Y MALLA
+========================= */}
+
+{openModal1 && (
+
+  <div className="
+    fixed inset-0 z-50
+    flex items-center justify-center
+    bg-black/50 backdrop-blur-sm
+    p-4
+  ">
+
+    <div className="
+      w-full max-w-6xl
+      max-h-[90vh]
+      overflow-y-auto
+      rounded-3xl
+      border border-gray-200 dark:border-gray-800
+      bg-white dark:bg-gray-900
+      shadow-2xl
+      p-6
+    ">
+
+      {/* HEADER */}
+      <div className="mb-6">
+
+        <h2 className="
+          text-2xl font-bold
+          text-gray-800 dark:text-white
+        ">
+          Panel de Datos Extraídos entre notas y mallas
+        </h2>
+
+        <p className="
+          mt-1
+          text-sm
+          text-gray-500 dark:text-gray-400
+        ">
+          Gestión y análisis de información procesada
+        </p>
+
+      </div>
+
+      {/* CONTENIDO */}
+      <div className="
+        grid grid-cols-1 md:grid-cols-2
+        gap-5
+      ">
+
+       {/* =========================
+    CARD NOTAS
+========================= */}
+<div className="
+  min-h-[380px]
+  rounded-2xl
+  border border-blue-200 dark:border-blue-900
+  bg-blue-50/60 dark:bg-blue-950/20
+  p-5 flex flex-col
+">
+
+  <h3 className="
+    text-sm font-bold
+    text-blue-700 dark:text-blue-300
+    mb-4
+  ">
+    DATOS EXTRAÍDOS DE NOTAS
+  </h3>
+
+  <div className="
+    flex-1 overflow-auto
+    border-2 border-dashed
+    border-blue-300 dark:border-blue-800
+    rounded-2xl
+    bg-white/60 dark:bg-gray-900/40
+    p-4
+  ">
+
+    {notas.length === 0 ? (
+
+      <div className="
+        h-full flex items-center justify-center
+        text-xs text-gray-500 dark:text-gray-400
+      ">
+        No existen notas extraídas
+      </div>
+
+    ) : (
+
+      <div className="space-y-3">
+
+        {notas.map((nota, index) => (
+
+          <div
+            key={index}
+            className="
+              p-4 rounded-xl
+              border border-blue-200 dark:border-blue-800
+              bg-white dark:bg-gray-900
+            "
+          >
+
+            <div className="
+              text-[11px]
+              font-bold
+              text-blue-700 dark:text-blue-300
+              mb-3
+              uppercase
+            ">
+              NOTA #{index + 1}
+            </div>
+
+            <div className="
+              text-xs
+              text-gray-700 dark:text-gray-300
+              space-y-2
+            ">
+
+              {Array.isArray(nota) ? (
+
+                nota.map(
+                  (
+                    item: string,
+                    itemIndex: number
+                  ) => (
+
+                    <div
+                      key={itemIndex}
+                      className="
+                        flex gap-2
+                        leading-relaxed
+                      "
+                    >
+
+                      <span className="
+                        font-semibold
+                        min-w-[18px]
+                      ">
+                        {itemIndex + 1}.
+                      </span>
+
+                      <span className="
+                        flex-1
+                      ">
+                        {item}
+                      </span>
+
+                    </div>
+                  )
+                )
+
+              ) : (
+
+                <div>
+                  {String(nota)}
+                </div>
+
+              )}
+
+            </div>
+
+          </div>
+
+        ))}
+
+      </div>
+
+    )}
+
+  </div>
+
+</div>
+
+        {/* =========================
+  {/* =========================
+    CARD DE MALLAS
+========================= */}
+<div
+  className="
+    min-h-[380px]
+    rounded-2xl
+    border border-purple-200 dark:border-purple-900
+    bg-purple-50/60 dark:bg-purple-950/20
+    p-5 flex flex-col
+  "
+>
+  <div
+    className="
+      flex items-center justify-between
+      mb-4 gap-4
+    "
+  >
+    <h3
+      className="
+        text-sm font-bold
+        text-purple-700 dark:text-purple-300
+      "
+    >
+      DATOS EXTRAÍDOS DE MALLAS
+    </h3>
+
+    <input
+      type="text"
+      value={codigoMalla}
+      placeholder="Buscar con código"
+      onChange={(e) =>
+        setCodigoMalla(
+          e.target.value
+        )
+      }
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          buscarMallaPorCodigo(
+            codigoMalla
+          );
+        }
+      }}
+      className="
+        w-64
+        px-3 py-2
+        text-sm
+        rounded-xl
+        border border-purple-300
+        dark:border-purple-700
+        bg-white dark:bg-gray-900
+        text-gray-700 dark:text-gray-200
+      "
+    />
+  </div>
+
+  <div
+    className="
+      flex-1 overflow-auto
+      border-2 border-dashed
+      border-purple-300 dark:border-purple-800
+      rounded-2xl
+      bg-white/60 dark:bg-gray-900/40
+      p-4
+    "
+  >
+    {loadingMalla ? (
+
+      <div
+        className="
+          h-full
+          flex items-center justify-center
+          text-sm text-purple-600
+        "
+      >
+        Extrayendo malla...
+      </div>
+
+    ) : mallas.length === 0 ? (
+
+      <div
+        className="
+          h-full
+          flex items-center justify-center
+          text-xs
+          text-gray-500 dark:text-gray-400
+        "
+      >
+        No existen mallas extraídas
+      </div>
+
+    ) : (
+
+      <div className="space-y-2">
+
+  {mallas.map(
+    (
+      modulo: string,
+      index: number
+    ) => (
+
+      <div
+        key={index}
+        className="
+          flex gap-3
+          text-sm
+          text-gray-700 dark:text-gray-300
+        "
+      >
+        <span
+          className="
+            font-semibold
+            min-w-[30px]
+          "
+        >
+          {index + 1}:
+        </span>
+
+        <span>
+          {modulo}
+        </span>
+
+      </div>
+
+    )
+  )}
+
+</div>
+
+    )}
+  </div>
+</div>
+
+      </div>
+
+      {/* =========================
+          BOTONES
+      ========================= */}
+      <div className="
+        mt-6 flex flex-wrap
+        items-center justify-between gap-4
+      ">
+
+        <div className="flex flex-wrap gap-3">
+
+          <button
+            onClick={manejarAnalisis}
+            disabled={analizando}
+            className="
+              px-5 py-2 rounded-xl
+              bg-blue-600 hover:bg-blue-700
+              disabled:opacity-50
+              text-white text-xs font-semibold
+              transition
+            "
+          >
+            {analizando ? "ANALIZANDO..." : "ANALIZAR Y COMPARAR DATOS"}
+          </button>
+
+          <button
+            onClick={manejarLimpiarMemoriaMalla}
+            className="
+              px-5 py-2 rounded-xl
+              bg-red-600 hover:bg-red-700
+              text-white text-xs font-semibold
+              transition
+               cursor-pointer
+  disabled:cursor-not-allowed
+            "
+          >
+            LIMPIAR MALLA
+          </button>
+
+          <button
+            onClick={() => {
+              if (!reporte) {
+                alert("Primero debe analizar los datos");
+                return;
+              }
+              setOpenReporte1(true);
+            }}
+            className="
+              px-5 py-2 rounded-xl
+              bg-emerald-600 hover:bg-emerald-700
+              text-white text-xs font-semibold
+              transition
+               cursor-pointer
+  disabled:cursor-not-allowed
+            "
+          >
+            VER REPORTES
+          </button>
+
+        </div>
+
+        <button
+          onClick={() => setOpenModal1(false)}
+          className="
+            px-5 py-2 rounded-xl
+            bg-gray-800 hover:bg-black
+            text-white text-sm font-medium
+            transition
+             cursor-pointer
+  disabled:cursor-not-allowed
+          "
+        >
+          Salir
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+)}
+
+{/* MODAL REPORTES */}
+{
+  openReporte1 && reporte && (
+    <div
+      className="
+        fixed inset-0 z-[999]
+        flex items-center justify-center
+        bg-black/60 dark:bg-black/80
+        backdrop-blur-sm
+        p-3
+      "
+    >
+      <div
+        className="
+          w-full max-w-7xl
+          max-h-[92vh]
+          overflow-y-auto
+
+          rounded-2xl
+
+          bg-white
+          dark:bg-slate-900
+
+          border
+          border-gray-200
+          dark:border-slate-700
+
+          shadow-2xl
+
+          p-4
+        "
+      >
+        {/* HEADER */}
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Reporte de Comparación - Codigo del Programa: {codigosProyecto || "SIN CÓDIGO"}
+            </h2>
+
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              Resumen de coincidencias y diferencias
+            </p>
+          </div>
+
+          <button
+            onClick={() => setOpenReporte1(false)}
+            className="
+              h-8 w-8
+              rounded-lg
+              bg-gray-100 hover:bg-gray-200
+              dark:bg-slate-800 dark:hover:bg-slate-700
+              text-gray-600 dark:text-gray-300
+              transition
+            "
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* RESUMEN */}
+        <div className="mb-4 grid grid-cols-2 md:grid-cols-4 gap-2">
+          {/* ... (sin cambios) */}
+        </div>
+
+        {/* DETALLE */}
+        <div className="space-y-3">
+          {reporte.reporte?.map((fila: any, index: number) => (
+            <div
+              key={index}
+              className={`
+                rounded-xl border
+
+                ${
+                  fila.estado === "IDENTICO"
+                    ? "border-green-200 dark:border-green-800"
+                    : fila.tieneFaltantes
+                    ? "border-amber-200 dark:border-amber-800"
+                    : "border-red-200 dark:border-red-800"
+                }
+              `}
+            >
+              {/* CABECERA FILA */}
+              <div
+                className={`
+                  flex items-center justify-between
+                  px-3 py-2 border-b
+
+                  ${
+                    fila.estado === "IDENTICO"
+                      ? "bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800"
+                      : fila.tieneFaltantes
+                      ? "bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-800"
+                      : "bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-800"
+                  }
+                `}
+              >
+                <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                  FILA {fila.fila}
+                </div>
+
+                <span className="
+                  px-2 py-0.5 rounded-full
+                  text-[10px] font-medium
+                  bg-white dark:bg-slate-800
+                  border border-gray-200 dark:border-slate-700
+                ">
+                  {fila.estado}
+                </span>
+              </div>
+
+              {/* TABLA */}
+              <div className="overflow-x-auto">
+                <table className="w-full text-[11px]">
+                  <tbody>
+                    {fila.registros?.map((reg: any, i: number) => (
+                      <tr
+                        key={i}
+                        className="
+                          border-b border-gray-100 dark:border-slate-800
+                          last:border-0
+                        "
+                      >
+                        {/* ORIGEN */}
+                        <td className="
+                          w-40 px-3 py-2
+                          font-semibold
+                          text-blue-600 dark:text-blue-400
+                          whitespace-nowrap
+                        ">
+                          {reg.origen}
+                        </td>
+
+                        {/* TEXTO */}
+                        <td className="
+                          px-3 py-2
+                          text-gray-700 dark:text-gray-300
+                          break-words
+                        ">
+                          {reg.texto || (
+                            <span className="italic text-red-500">
+                              SIN REGISTRO
+                            </span>
+                          )}
+                        </td>
+
+                        {/* 🔥 NUEVO: ID PROGRAMA A LA DERECHA */}
+                        <td className="
+                          w-44
+                          px-3 py-2
+                          text-right
+                          text-[10px]
+                          font-semibold
+                          text-purple-600 dark:text-purple-300
+                          whitespace-nowrap
+                        ">
+                          {reg.idPrograma ?? reg.codAcadem ?? "—"}
+                        </td>
+
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* FOOTER */}
+        <div className="
+          mt-4 pt-3
+          border-t border-gray-200 dark:border-slate-700
+          flex justify-end
+        ">
+          <button
+            onClick={() => setOpenReporte1(false)}
+            className="
+              px-4 py-2
+              rounded-lg
+              text-sm
+              bg-slate-900 hover:bg-black
+              dark:bg-blue-600 dark:hover:bg-blue-500
+              text-white
+              transition
+            "
+          >
+            Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   </div>

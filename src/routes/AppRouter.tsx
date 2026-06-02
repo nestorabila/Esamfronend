@@ -4,6 +4,9 @@ import Home from "../pages/Home";
 import NotFound from "../pages/NotFound";
 import MainLayout from "../layouts/MainLayout";
 import Monitoreo from "../pages/Monitoreo";
+import SumarDiplomado from "../pages/sumardiplomado";
+import SumarMaestria from "../pages/sumarmaestria";
+import SumarEspecialidad from "../pages/sumarespecialidad";
 
 function AppRouter() {
   return (
@@ -16,6 +19,9 @@ function AppRouter() {
         <Route path="/app" element={<MainLayout />}>
           <Route path="home" element={<Home />} />
           <Route path="monitoreo" element={<Monitoreo />} />
+          <Route path="sumardiplomado" element={<SumarDiplomado />} />
+          <Route path="sumarmaestria" element={<SumarMaestria />} />
+          <Route path="sumarespecialidad" element={<SumarEspecialidad />} />
         </Route>
 
         {/* Error */}
