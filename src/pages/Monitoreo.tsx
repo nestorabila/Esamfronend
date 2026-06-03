@@ -164,6 +164,101 @@ async () => {
   }
 
 };
+
+
+
+const normalizarTexto1 = (
+  texto: string
+) => {
+
+  return texto
+    .normalize("NFD")
+    .replace(
+      /[\u0300-\u036f]/g,
+      ""
+    )
+    .replace(/\s+/g, " ")
+    .trim()
+    .toUpperCase();
+
+};
+
+const manejarAnalisis1 = () => {
+
+  if (
+    notas.length === 0 ||
+    mallas.length === 0
+  ) {
+
+    alert(
+      "Debe tener notas y mallas cargadas"
+    );
+
+    return;
+  }
+
+  const notasLista =
+    Array.isArray(notas[0])
+      ? notas[0]
+      : [];
+
+  const totalFilas =
+    Math.max(
+      notasLista.length,
+      mallas.length
+    );
+
+  const resultado = [];
+
+  for (
+    let i = 0;
+    i < totalFilas;
+    i++
+  ) {
+
+    const nota =
+      notasLista[i] || "";
+
+    const malla =
+      mallas[i] || "";
+
+    const iguales =
+      normalizarTexto1(nota) ===
+      normalizarTexto1(malla);
+
+    resultado.push({
+
+      fila: i + 1,
+
+      estado: iguales
+        ? "IDENTICO"
+        : "DIFERENTE",
+
+      registros: [
+
+        {
+          origen: "NOTA",
+          texto: nota
+        },
+
+        {
+          origen: "MALLA",
+          texto: malla
+        }
+
+      ]
+
+    });
+
+  }
+
+  setReporte({
+    reporte: resultado
+  });
+
+};
+
+
   // aqui terminar funciones de mallas
 
 
@@ -2374,7 +2469,7 @@ const [codigosProyecto, setCodigosProyecto] =
         <div className="flex flex-wrap gap-3">
 
           <button
-            onClick={manejarAnalisis}
+            onClick={manejarAnalisis1}
             disabled={analizando}
             className="
               px-5 py-2 rounded-xl

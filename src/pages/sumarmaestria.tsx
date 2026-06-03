@@ -78,6 +78,28 @@ const configuraciones = {
     { thp: 120, thnp: 80 },
     { thp: 120, thnp: 80 },
   ],
+  19: [
+  { thp: 44, thnp: 76 },
+  { thp: 44, thnp: 76 },
+  { thp: 44, thnp: 76 },
+  { thp: 64, thnp: 96 },
+  { thp: 64, thnp: 96 },
+  { thp: 64, thnp: 96 },
+  { thp: 54, thnp: 66 },
+  { thp: 54, thnp: 66 },
+  { thp: 54, thnp: 66 },
+  { thp: 54, thnp: 66 },
+  { thp: 48, thnp: 72 },
+  { thp: 48, thnp: 72 },
+  { thp: 44, thnp: 76 },
+  { thp: 44, thnp: 76 },
+  { thp: 44, thnp: 76 },
+  { thp: 44, thnp: 76 },
+  { thp: 44, thnp: 76 },
+  { thp: 44, thnp: 76 },
+  { thp: 60, thnp: 60 },
+],
+
 };
 
 const [tipo, setTipo] = useState(18);
@@ -236,6 +258,17 @@ return (
           />
           <span>18</span>
         </label>
+
+          <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="radio"
+            name="tipo"
+            checked={tipo === 19}
+            onChange={() => cambiarTipo(19)}
+          />
+          <span>19</span>
+        </label>
+
       </div>
 
       {/* Tabla */}
