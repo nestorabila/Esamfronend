@@ -1,92 +1,54 @@
+import type { Inscritos } from "../model/Inscritos";
 import api from "./api";
-import type { Programa } from "../model/programa";
 
 /* =========================================================
-   PROGRAMAS
+   PROGRAMAS NO INSCRITOS
 ========================================================= */
 
-export const obtenerProgramas =
-async (): Promise<Programa[]> => {
-
-    const { data } =
-        await api.get("/excel");
-         console.log("MALLAS RECIBIDAS:", data);
-        console.log("DATOS:", data.datos);
-
-    return data.datos;
-};
-
-/* =========================================================
-   MALLAS
-========================================================= */
-
-export const extraerMalla =
-async (url: string) => {
-
-    const { data } =
-        await api.post(
-            "/mallas",
-            { url }
-        );
-
-    return data;
-};
-
-export const listarMallas =
-async () => {
+export const obtenerInscritos =
+async (): Promise<Inscritos[]> => {
 
     const { data } =
         await api.get(
-            "/listarmallas"
+            "/excelPrograma"
         );
 
-    return data;
-};
-
-export const limpiarMallas =
-async () => {
-
-    const { data } =
-        await api.delete(
-            "/mallas"
-        );
-
-    return data;
+    return data.datos;
 };
 
 /* =========================================================
    PROYECTOS
 ========================================================= */
 
-export const extraerProyecto =
+export const extraerProyectoPrograma =
 async (url: string) => {
 
     const { data } =
         await api.post(
-            "/proyecto",
+            "/extraerproyectoPrograma",
             { url }
         );
 
     return data;
 };
 
-export const listarProyectos =
+export const listarProyectosPrograma =
 async () => {
 
     const { data } =
         await api.get(
-            "/listarproyecto"
+            "/listarproyectoPrograma"
         );
 
     return data;
 };
 
-export const limpiarProyectos =
+export const limpiarProyectosPrograma =
 async () => {
 
     const { data } =
         await api.delete(
-            "/limpiarproyecto"
+            "/limpiarproyectoPrograma"
         );
 
     return data;
@@ -96,12 +58,30 @@ async () => {
    ANALISIS
 ========================================================= */
 
-export const analizarDatos =
+export const analizarPrograma =
 async () => {
 
     const { data } =
         await api.post(
-            "/analizar"
+            "/analizarPrograma"
+        );
+
+    return data;
+};
+
+/* =========================================================
+   ACTUALIZAR RESULTADO
+========================================================= */
+
+export const actualizarResultadoPrograma =
+async (codAcadem: string) => {
+
+    const { data } =
+        await api.post(
+            "/actualizarResultadoPrograma",
+            {
+                codAcadem
+            }
         );
 
     return data;

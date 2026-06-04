@@ -37,7 +37,7 @@ function Sidebar() {
       icon: <FiAward size={18} />,
     },
     {
-      name: "Suma Especialidad",
+      name: "Programas no Inscritos",
       path: "/app/sumarespecialidad",
       icon: <FiBriefcase size={18} />,
     },

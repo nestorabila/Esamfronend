@@ -1948,7 +1948,7 @@ const [codigosProyecto, setCodigosProyecto] =
         <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Reporte de Comparación - Codigo del Programa: {codigosProyecto || "SIN CÓDIGO"}
+              Reporte de Comparación Notas con Proyecto - Codigo del Programa: {codigosProyecto || "SIN CÓDIGO"}
             </h2>
 
             <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -2576,7 +2576,7 @@ const [codigosProyecto, setCodigosProyecto] =
         <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Reporte de Comparación - Codigo del Programa: {codigosProyecto || "SIN CÓDIGO"}
+              Reporte de Comparación Nota con Mallas
             </h2>
 
             <p className="text-xs text-gray-500 dark:text-gray-400">
