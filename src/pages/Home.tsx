@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { analizarDatos, extraerMalla, extraerProyecto, listarMallas, listarProyectos, obtenerProgramas } from "../services/programaService";
+import { analizarDatos, extraerMalla, extraerProyecto, limpiarMallas, limpiarProyectos, listarMallas, listarProyectos, obtenerProgramas } from "../services/programaService";
 import type { Programa } from "../model/programa";
+import { limpiarProyectosNuevos } from "../services/monitoreoService";
 
 function Home() {
 
@@ -330,11 +331,8 @@ const manejarLimpiarMemoriaProyecto =
 async () => {
 
   try {
-
-   
-
-    // const respuestaProyectos =
-    //   await limpiarProyectos();
+      await limpiarProyectos();
+      await limpiarProyectosNuevos ();
 
     // LIMPIAR FRONTEND
     
@@ -381,12 +379,9 @@ const manejarLimpiarMemoria =
 async () => {
 
   try {
-
-    // const respuestaMallas =
-    //   await limpiarMallas();
-
-    // const respuestaProyectos =
-    //   await limpiarProyectos();
+      await limpiarMallas();
+      await limpiarProyectos();
+       await limpiarProyectosNuevos ();
 
     // LIMPIAR FRONTEND
     setMallas([]);
@@ -491,6 +486,29 @@ const filtrarPrograma = (
 
 };
 
+const [textoPrograma, setTextoPrograma] =
+  useState("");
+
+const [mostrarProgramas,
+  setMostrarProgramas] =
+  useState(false);
+
+  const programasFiltradosBusqueda =
+  programasUnicos.filter(
+    programa =>
+      normalizarTexto(programa)
+        .includes(
+          normalizarTexto(
+            textoPrograma
+          )
+        )
+  );
+
+
+
+
+
+
 
 
 const filtrarSede = (sede: string) => {
@@ -567,56 +585,173 @@ setProgramasFiltrados(data);
 <div className="flex items-end gap-4 flex-wrap">
 
   {/* FILTRO PROGRAMA */}
+<div className="flex flex-col relative">
 
-  <div className="flex flex-col">
+  <label
+    className="
+      text-[11px]
+      font-medium
+      text-gray-600
+      dark:text-gray-400
+      mb-1
+    "
+  >
+    Filtrar por programa
+  </label>
 
-    <label
-      className="
-        text-[11px]
-        font-medium
-        text-gray-600 dark:text-gray-400
-        mb-1
-      "
-    >
-      Filtrar por programa
-    </label>
+  <div className="relative w-[520px]">
 
-    <select
-      value={programaSeleccionado}
-      onChange={(e) =>
-        filtrarPrograma(e.target.value)
+    <input
+      type="text"
+      value={textoPrograma}
+      placeholder="Buscar programa..."
+      onFocus={() =>
+        setMostrarProgramas(true)
       }
+      onChange={(e) => {
+
+        setTextoPrograma(
+          e.target.value
+        );
+
+        setMostrarProgramas(
+          true
+        );
+
+      }}
       className="
-        w-[520px]
-        px-3 py-2
+        w-full
+        px-3 py-2 pr-10
         text-xs
         rounded-lg
-        border border-gray-300 dark:border-gray-700
-        bg-white dark:bg-gray-900
-        text-gray-700 dark:text-gray-200
+        border
+        border-gray-300
+        dark:border-gray-700
+        bg-white
+        dark:bg-gray-900
+        text-gray-700
+        dark:text-gray-200
+        placeholder-gray-400
+        dark:placeholder-gray-500
         focus:outline-none
-        focus:ring-2 focus:ring-blue-500/40
+        focus:ring-2
+        focus:ring-blue-500/40
       "
+    />
+
+    <svg
+      className="
+        absolute
+        right-3
+        top-1/2
+        -translate-y-1/2
+        w-4 h-4
+        text-gray-500
+        dark:text-gray-400
+      "
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
     >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="M19 9l-7 7-7-7"
+      />
+    </svg>
 
-      <option value="">
-        Todos los programas
-      </option>
+    {mostrarProgramas && (
 
-      {programasUnicos.map((programa, index) => (
+      <div
+        className="
+          absolute
+          z-50
+          mt-1
+          w-full
+          max-h-64
+          overflow-y-auto
+          rounded-lg
+          border
+          border-gray-300
+          dark:border-gray-700
+          bg-white
+          dark:bg-gray-900
+          shadow-lg
+        "
+      >
 
-        <option
-          key={index}
-          value={programa}
+        <div
+          className="
+            px-3 py-2
+            text-xs
+            cursor-pointer
+            hover:bg-gray-100
+            dark:hover:bg-gray-800
+            text-gray-700
+            dark:text-gray-200
+          "
+          onClick={() => {
+
+            setTextoPrograma("");
+
+            filtrarPrograma("");
+
+            setMostrarProgramas(
+              false
+            );
+
+          }}
         >
-          {programa}
-        </option>
+          Todos los programas
+        </div>
 
-      ))}
+        {programasFiltradosBusqueda.map(
+          (
+            programa,
+            index
+          ) => (
 
-    </select>
+            <div
+              key={index}
+              className="
+                px-3 py-2
+                text-xs
+                cursor-pointer
+                hover:bg-gray-100
+                dark:hover:bg-gray-800
+                text-gray-700
+                dark:text-gray-200
+              "
+              onClick={() => {
+
+                setTextoPrograma(
+                  programa
+                );
+
+                filtrarPrograma(
+                  programa
+                );
+
+                setMostrarProgramas(
+                  false
+                );
+
+              }}
+            >
+              {programa}
+            </div>
+
+          )
+        )}
+
+      </div>
+
+    )}
 
   </div>
+
+</div>
 
   {/* FILTRO SEDE */}
 

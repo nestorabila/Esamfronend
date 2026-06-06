@@ -18,7 +18,8 @@ import {
   obtenerProgramas,
   extraerMalla,
   listarMallas,
-  limpiarMallas
+  limpiarMallas,
+  limpiarProyectos
 } from "../services/programaService";
 
 
@@ -715,10 +716,8 @@ const [codigosProyecto, setCodigosProyecto] =
   
     try {
   
-     
-  
-      // const respuestaProyectos =
-      //   await limpiarProyectosNuevos();
+        await limpiarProyectosNuevos();
+        await limpiarProyectos();
   
       // LIMPIAR FRONTEND
       
@@ -767,6 +766,7 @@ const [codigosProyecto, setCodigosProyecto] =
 
       await limpiarNotas();
       await limpiarProyectosNuevos();
+      await limpiarProyectos();
 
       setNotas([]);
       setProyectos([]);

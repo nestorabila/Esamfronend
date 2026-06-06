@@ -368,39 +368,36 @@ const obtenerDatosComparacion = (
         indice
       ]?.modulos || []
     );
+
   }
 
+  const [
+    tipo,
+    indiceStr
+  ] = nombre.split("|");
+
+  const indice =
+    Number(indiceStr);
+
   const proyecto =
-    proyectos[0];
+    proyectos[indice];
 
   if (!proyecto)
     return [];
 
-  switch (nombre) {
+  switch (tipo) {
 
     case "PLAN TEMATICO":
-      return (
-        proyecto.planTematico
-        || []
-      );
+      return proyecto.planTematico || [];
 
     case "FONDO TIEMPO":
-      return (
-        proyecto.fondoTiempo
-        || []
-      );
+      return proyecto.fondoTiempo || [];
 
     case "CRONOGRAMA":
-      return (
-        proyecto.cronograma
-        || []
-      );
+      return proyecto.cronograma || [];
 
     case "CLAUSTRO DOCENTE":
-      return (
-        proyecto.claustroDocente
-        || []
-      );
+      return proyecto.claustroDocente || [];
 
     default:
       return [];
@@ -408,7 +405,6 @@ const obtenerDatosComparacion = (
   }
 
 };
-
 
 const manejarAnalisis =
   async () => {
@@ -847,25 +843,31 @@ const aplicarFiltros = (
           link
         );
 
-        setCodigosProyecto([
-          codAcadem
-        ]);
+     const indiceProyecto =
+  codigosProyecto.length;
 
-        await cargarProyectos();
-        setElementosComparar(
-  (prev) => [
+setCodigosProyecto(
+  prev => [
+    ...prev,
+    codAcadem
+  ]
+);
+
+
+
+await cargarProyectos();
+
+setElementosComparar(
+  prev => [
 
     ...prev,
 
-    "PLAN TEMATICO",
-    "FONDO TIEMPO",
-    "CRONOGRAMA",
-    "CLAUSTRO DOCENTE"
+    `PLAN TEMATICO|${indiceProyecto}`,
+    `FONDO TIEMPO|${indiceProyecto}`,
+    `CRONOGRAMA|${indiceProyecto}`,
+    `CLAUSTRO DOCENTE|${indiceProyecto}`
 
-  ].filter(
-    (item, index, arr) =>
-      arr.indexOf(item) === index
-  )
+  ]
 );
 
         setTipoMensaje(
@@ -976,51 +978,57 @@ const aplicarFiltros = (
   // LIMPIAR TODO
   // =========================
 
-  const limpiarTodo =
-    async () => {
+const limpiarTodo = async () => {
 
-      try {
+  try {
 
-        await limpiarProyectosPrograma();
+    await limpiarProyectosPrograma();
 
-        setProyectos([]);
+    setProyectos([]);
 
-        setReporte(
-          null
-        );
-setElementosComparar(
-  (prev) =>
-    prev.filter(
-      (item) =>
+    setCodigosProyecto([]);
 
-        item !== "PLAN TEMATICO" &&
-        item !== "FONDO TIEMPO" &&
-        item !== "CRONOGRAMA" &&
-        item !== "CLAUSTRO DOCENTE"
-    )
-);
-        setTipoMensaje(
-          "success"
-        );
+    setReporte(null);
 
-        setMensaje(
-          "Datos limpiados correctamente."
-        );
+    setElementosComparar(
+      prev =>
+        prev.filter(
+          item =>
+            item.startsWith("MALLA ")
+        )
+    );
 
-      } catch (error) {
+    setTipoMensaje(
+      "success"
+    );
 
-        console.log(error);
+    setMensaje(
+      "Datos limpiados correctamente."
+    );
 
-        setTipoMensaje(
-          "error"
-        );
+    setTimeout(() => {
 
-        setMensaje(
-          "Error al limpiar datos."
-        );
-      }
-    };
+      setMensaje("");
 
+      setTipoMensaje("");
+
+    }, 3000);
+
+  } catch (error) {
+
+    console.log(error);
+
+    setTipoMensaje(
+      "error"
+    );
+
+    setMensaje(
+      "Error al limpiar datos."
+    );
+
+  }
+
+};
  return (
   <div className="max-w-[1700px] mx-auto">
 
@@ -1935,12 +1943,12 @@ setElementosComparar(
     type="checkbox"
      checked={
     elementosComparar.includes(
-      "PLAN TEMATICO"
+       `PLAN TEMATICO|${index}`
     )
   }
   onChange={() =>
     manejarCheckboxComparacion(
-      "PLAN TEMATICO"
+       `PLAN TEMATICO|${index}`
     )
   }
     className="
@@ -2017,12 +2025,14 @@ setElementosComparar(
     type="checkbox"
      checked={
     elementosComparar.includes(
-      "FONDO TIEMPO"
+      `FONDO TIEMPO|${index}`
+    
     )
   }
   onChange={() =>
     manejarCheckboxComparacion(
-      "FONDO TIEMPO"
+      `FONDO TIEMPO|${index}`
+      
     )
   }
     className="
@@ -2099,12 +2109,12 @@ setElementosComparar(
     type="checkbox"
       checked={
     elementosComparar.includes(
-      "CRONOGRAMA"
+     `CRONOGRAMA|${index}`
     )
   }
   onChange={() =>
     manejarCheckboxComparacion(
-      "CRONOGRAMA"
+      `CRONOGRAMA|${index}`
     )
   }
     className="
@@ -2181,12 +2191,12 @@ setElementosComparar(
     type="checkbox"
      checked={
     elementosComparar.includes(
-      "CLAUSTRO DOCENTE"
+      `CLAUSTRO DOCENTE|${index}`
     )
   }
   onChange={() =>
     manejarCheckboxComparacion(
-      "CLAUSTRO DOCENTE"
+      `CLAUSTRO DOCENTE|${index}`
     )
   }
     className="
